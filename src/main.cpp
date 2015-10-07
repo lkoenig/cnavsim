@@ -4,14 +4,18 @@
 #include "physics.hpp"
 
 int main(int argc, char **argv) {
-    std::cout << "NavSim" << std::endl;
+    // std::cout << "NavSim" << std::endl;
 
-    PhysicSimulation *physic = new PhysicSimulation();
+    PhysicsEngine *physics = new PhysicsEngine();
     Vessel *vessel = new Vessel();
 
-    physic->add_actor(vessel);
-    physic->timestep(0.01);
+    physics->add_body(vessel);
+    double time_delta = .01;
     
+    for(double t = 0.0;t < 10.; t += time_delta) {
+    	physics->timestep(time_delta);
+    }
+
     delete vessel;
-    delete physic;    
+    delete physics;    
 }

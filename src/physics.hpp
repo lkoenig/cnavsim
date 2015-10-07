@@ -5,24 +5,25 @@
 
 class Body {
 public:
-    
-    void solve(double time_delta);
     virtual void apply_forces() = 0;
+    void time_step(double time_delta);
+    void print_position();
 
 protected:
-    double heading;
-    double surge;
-    double sway;
-    double yaw;
     double mass;
+    double total_force[2];
+
+    double position[2];
+    double velocity[2];
+    double acceleration[2];
 };
 
 
-class PhysicSimulation {
+class PhysicsEngine {
 public:
-    PhysicSimulation();
+    PhysicsEngine();
     
-    void add_actor(Body *actor);
+    void add_body(Body *actor);
     void timestep(double time_delta); 
     
 private:
