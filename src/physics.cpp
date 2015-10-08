@@ -11,7 +11,7 @@ void Body::time_step(double time_delta) {
 }
 
 void Body::print_position() {
-	std::cout << _position.transpose() << std::endl;
+    std::cout << _position.transpose() << " " << _velocity.norm() << std::endl;
 }
 
 
