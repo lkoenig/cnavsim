@@ -1,21 +1,17 @@
 #include <vector>
 #include <iostream>
+#include <Eigen/Dense>
 
 #include "physics.hpp"
 
 void Body::time_step(double time_delta) {
-	acceleration[0] = total_force[0] / mass;
-	acceleration[1] = total_force[1] / mass;
-
-	velocity[0] += acceleration[0] * time_delta;
-	velocity[1] += acceleration[1] * time_delta;
-
-	position[0] += velocity[0] * time_delta;
-	position[1] += velocity[1] * time_delta;
+	_acceleration = _total_force / mass;
+	_velocity += _acceleration * time_delta;
+	_position += _velocity * time_delta;
 }
 
 void Body::print_position() {
-	std::cout << position[0] << " " << position[1] << std::endl;
+	std::cout << _position.transpose() << std::endl;
 }
 
 

@@ -2,20 +2,26 @@
 #define PHYSICS_H
 
 #include <vector>
+#include <Eigen/Dense>
+
+using namespace Eigen;
 
 class Body {
 public:
     virtual void apply_forces() = 0;
+
     void time_step(double time_delta);
+
     void print_position();
 
 protected:
     double mass;
-    double total_force[2];
 
-    double position[2];
-    double velocity[2];
-    double acceleration[2];
+    Vector2d _total_force;
+
+    Vector2d _position;
+    Vector2d _velocity;
+    Vector2d _acceleration;
 };
 
 

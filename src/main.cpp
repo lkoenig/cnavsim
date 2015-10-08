@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
     Vessel *vessel = new Vessel();
 
     physics->add_body(vessel);
-    double time_delta = .01;
+    double time_delta = .001;
     
     for(double t = 0.0;t < 10.; t += time_delta) {
     	physics->timestep(time_delta);

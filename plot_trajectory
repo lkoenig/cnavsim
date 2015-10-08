@@ -1,12 +1,12 @@
-#!/usr/bin/gnuplot
+#!/usr/bin/gnuplot -p
 
-set xlabel "test"
-set ylabel "value"
+set xlabel "x (m)"
+set ylabel "y (m)"
 set grid ytics lt 0 lw 1 lc rgb "#bbbbbb"
 set grid xtics lt 0 lw 1 lc rgb "#bbbbbb"
 set autoscale
-set terminal postscript portrait enhanced mono dashed lw 1 'Helvetica' 14
+# set terminal postscript portrait enhanced mono dashed lw 1 'Helvetica' 14
+# set output 'out.eps'
 set style line 1 lt 1 lw 3 pt 3 linecolor rgb "red"
-set output 'out.eps'
-plot '< cat -' using 1:2 w points title "trajectory"
-pause -1
+
+plot '< cat -' using 1:2 w linespoints title "trajectory"
