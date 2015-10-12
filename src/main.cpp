@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
     
     for(double t = 0.0;t < 10.; t += time_delta) {
     	physics->timestep(time_delta);
+        physics->print_all_positions();
     }
 
     delete vessel;

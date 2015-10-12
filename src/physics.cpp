@@ -3,19 +3,11 @@
 #include <Eigen/Dense>
 
 #include "physics.hpp"
+#include "body.hpp"
 
-void Body::time_step(double time_delta) {
-	_acceleration = _total_force / mass;
-	_velocity += _acceleration * time_delta;
-	_position += _velocity * time_delta;
-}
-
-void Body::print_position() {
-    std::cout << _position.transpose() << " " << _velocity.norm() << std::endl;
-}
-
-
-PhysicsEngine::PhysicsEngine() {
+PhysicsEngine::PhysicsEngine()
+    : _current_time(0)
+{
 }
 
 void PhysicsEngine::add_body(Body *actor)
@@ -26,6 +18,7 @@ void PhysicsEngine::add_body(Body *actor)
 
 void PhysicsEngine::timestep(double time_delta)
 {
+    _current_time += time_delta;
     // apply forces
     for(std::vector<Body *>::iterator it = m_actors.begin(); it != m_actors.end(); ++it) {
     	(*it)->apply_forces();
@@ -35,10 +28,14 @@ void PhysicsEngine::timestep(double time_delta)
     for(std::vector<Body *>::iterator it = m_actors.begin(); it != m_actors.end(); ++it) {
     	(*it)->time_step(time_delta);
     }
+}
 
-    // integrate and update position
+void PhysicsEngine::print_all_positions() {
+    std::cout << _current_time << " ";
     for(std::vector<Body *>::iterator it = m_actors.begin(); it != m_actors.end(); ++it) {
-    	(*it)->print_position();
+        std::cout << (*it)->getPosition().transpose() << " ";
+        std::cout << (*it)->getVelocity().norm() << " ";
     }
+    std::cout << std::endl;
 
 }

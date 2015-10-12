@@ -2,28 +2,11 @@
 #define PHYSICS_H
 
 #include <vector>
-#include <Eigen/Dense>
+#include "body.hpp"
 
-using namespace Eigen;
-
-class Body {
-public:
-    virtual void apply_forces() = 0;
-
-    void time_step(double time_delta);
-
-    void print_position();
-
-protected:
-    double mass;
-
-    Vector2d _total_force;
-
-    Vector2d _position;
-    Vector2d _velocity;
-    Vector2d _acceleration;
-};
-
+namespace Constant {
+    static const double densityOfWater = 1.0;
+}
 
 class PhysicsEngine {
 public:
@@ -31,8 +14,11 @@ public:
     
     void add_body(Body *actor);
     void timestep(double time_delta); 
+    void print_all_positions();
+    
     
 private:
+    double _current_time;
     std::vector<Body *> m_actors;
 };
 
