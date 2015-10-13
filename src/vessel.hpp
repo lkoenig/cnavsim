@@ -13,4 +13,5 @@ private:
     
     // Parameters
     double _rudder_angle; // in degree
+    double _rudder_surface;
 };

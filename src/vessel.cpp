@@ -15,6 +15,8 @@ Vessel::Vessel()
 
 void Vessel::apply_forces()
 {
+    Vector2d velocity_in_water = _velocity;
+    
 	Vector2d gravity;  gravity <<  0, -10.;
 
 	double C_D = 1;
@@ -32,6 +34,10 @@ void Vessel::apply_forces()
     
     Vector2d rudder_force; rudder_force << 0, 0;
     
+    double rudder_torque = sin(_rudder_angle) * _rudder_surface * velocity_in_water.norm() * Constant::densityOfWater * _length / 2.;
+    
+    
+    _total_torque = rudder_torque;
 	_total_force = drag_force + gravity + rudder_force;
 
 }
