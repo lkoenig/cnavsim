@@ -13,8 +13,11 @@ public:
     
     Vector2d getPosition();
     Vector2d getVelocity();
+    double getHeading();
     
 protected:
+    virtual ~Body() {};
+    
     double _mass; // mass
     double _inertia;
     

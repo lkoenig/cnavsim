@@ -20,3 +20,7 @@ Vector2d Body::getPosition() {
 Vector2d Body::getVelocity() {
     return _velocity;
 }
+
+double Body::getHeading() {
+    return _heading;
+}

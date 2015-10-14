@@ -7,27 +7,29 @@
 #include "vessel.hpp"
 
 Vessel::Vessel()
-: _length(12)
-, _beam(4)
+    : _length(12)
+    , _beam(4)
 {
-	_position << 0., 0.;
-	_velocity << 5, 5;
-	_mass = 10.; // grams
+    _heading = 0;
+    _omega = 0;
+    _position << 0., 0.;
+    _velocity << 5, 5;
+    _mass = 10.; // grams
+    _inertia = 1;
+    _rudder_angle = 10 * 2 * 3.14 / 360.;
 }
 
 void Vessel::apply_forces()
 {
     Vector2d velocity_in_water = _velocity;
     
-	Vector2d gravity;  gravity <<  0, -10.;
-
-	double C_D = 1;
-	double A = 1;
-	// F_d = 1/2 \rho v^2 C_D A
-	// Where
-	//   v is the velocity
-	//   C_D coefficient of drag
-	//   A Cross sectional area
+    double C_D = 1;
+    double A = 1;
+    // F_d = 1/2 \rho v^2 C_D A
+    // Where
+    //   v is the velocity
+    //   C_D coefficient of drag
+    //   A Cross sectional area
     Vector2d drag_force = -1. / 2. * Constant::densityOfWater * _velocity.norm() * _velocity * C_D * A;
 
     
@@ -41,6 +43,6 @@ void Vessel::apply_forces()
     double rudder_torque = copysign( std::max(0.0, std::abs( turning_torque ) - std::abs(water_torque) ), turning_torque );
     
     _total_torque = rudder_torque;
-    _total_force = drag_force + gravity + rudder_drag_force;
+    _total_force = drag_force + rudder_drag_force;
 
 }

@@ -34,6 +34,7 @@ void PhysicsEngine::print_all_positions() {
     std::cout << _current_time << " ";
     for(std::vector<Body *>::iterator it = m_actors.begin(); it != m_actors.end(); ++it) {
         std::cout << (*it)->getPosition().transpose() << " ";
+	std::cout << (*it)->getHeading() << " ";
         std::cout << (*it)->getVelocity().norm() << " ";
     }
     std::cout << std::endl;
