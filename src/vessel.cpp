@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cmath>
+#include <algorithm>
 #include <Eigen/Dense>
 
 #include "physics.hpp"
@@ -30,14 +32,15 @@ void Vessel::apply_forces()
 
     
     // Rudder https://gamedev.stackexchange.com/questions/92747/2d-boat-controlling-physics
+    double rudder_drag_coefficient = 1.;
+    Vector2d rudder_drag_force;
+    rudder_drag_force = - std::abs(sin(_rudder_angle)) * rudder_drag_coefficient * _rudder_area * _velocity.norm() * _velocity;
     
-    
-    Vector2d rudder_force; rudder_force << 0, 0;
-    
-    double rudder_torque = sin(_rudder_angle) * _rudder_surface * velocity_in_water.norm() * Constant::densityOfWater * _length / 2.;
-    
+    double turning_torque = sin(_rudder_angle) * _rudder_area * velocity_in_water.norm() * Constant::densityOfWater * _length / 2.;
+    double water_torque = 0; // p0 + p1 * _omega + p2 * _omega * _omega;
+    double rudder_torque = copysign( std::max(0.0, std::abs( turning_torque ) - std::abs(water_torque) ), turning_torque );
     
     _total_torque = rudder_torque;
-	_total_force = drag_force + gravity + rudder_force;
+    _total_force = drag_force + gravity + rudder_drag_force;
 
 }
