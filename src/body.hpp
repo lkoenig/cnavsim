@@ -10,12 +10,14 @@ public:
     virtual void apply_forces() = 0;
     
     void time_step(double time_delta);
-    
+
     Vector2d getPosition();
     Vector2d getVelocity();
     double getHeading();
     
 protected:
+    void addForceAt(Vector2d * force, Vector2d * Position);
+
     virtual ~Body() {};
     
     double _mass; // mass
@@ -26,8 +28,8 @@ protected:
     double _total_torque;
     
     double _heading;
-    double _omega;    // rotational velocity
-    double _omega_prime; 
+    double m_angularVelocity;    // rotational velocity
+    double m_angularMomentum; 
     
     Vector2d _position;  // x, y, heading
     Vector2d _velocity;

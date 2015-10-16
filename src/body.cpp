@@ -7,9 +7,9 @@ void Body::time_step(double time_delta) {
     _velocity += _acceleration * time_delta;
     _position += _velocity * time_delta;
 
-    _omega_prime = _total_torque / _inertia;
-    _omega += _omega_prime * time_delta;
-    _heading += _omega * time_delta;
+    m_angularMomentum = _total_torque / _inertia;
+    m_angularVelocity += m_angularMomentum * time_delta;
+    _heading += m_angularVelocity * time_delta;
 
 }
 
@@ -23,4 +23,13 @@ Vector2d Body::getVelocity() {
 
 double Body::getHeading() {
     return _heading;
+}
+
+void Body::addForceAt(Vector2d *force, Vector2d *Position)
+{
+    // Update force on center of mass
+
+    // update torque
+
+    return;
 }

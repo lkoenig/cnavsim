@@ -18,7 +18,7 @@ public:
     
     
 private:
-    double _current_time;
+    double m_current_time;
     std::vector<Body *> m_actors;
 };
 
