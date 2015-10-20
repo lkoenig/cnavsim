@@ -7,16 +7,18 @@
 #include "vessel.hpp"
 
 Vessel::Vessel()
-    : _length(12)
+    : Body(10., MatrixXd::Identity(3,3))
+    , _length(12)
     , _beam(4)
 {
+    m_linearVelocity << 5, 5, 0;
     _heading = 0;
-    m_angularVelocity = 0;
+    _angularVelocity = 0;
     _position << 0., 0.;
     _velocity << 5, 5;
-    _mass = 10.; // grams
     _inertia = 1;
     _rudder_angle = 10 * 2 * 3.14 / 360.;
+    _rudder_area = 1.0;
 }
 
 void Vessel::apply_forces()
@@ -25,6 +27,7 @@ void Vessel::apply_forces()
 
     double C_D = 1;
     double A = 1;
+
 
     // F_d = 1/2 \rho v^2 C_D A
     // Where
