@@ -25,10 +25,17 @@ void Vessel::apply_forces()
 {
     Vector2d velocity_in_water = _velocity;
 
+    // Rudder
+    Vector3d rudder_lift;
+    Vector3d rudder_drag;
+    double rudder_effective_area = _rudder_area * sin(_rudder_angle);
+
+    rudder_lift = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_lift_coefficient();
+    rudder_drag = 0.5 * Constant::densityOfWater * rudder_effective_area *m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_drag_coefficient();
+
+
     double C_D = 1;
     double A = 1;
-
-
     // F_d = 1/2 \rho v^2 C_D A
     // Where
     //   v is the velocity
@@ -49,4 +56,14 @@ void Vessel::apply_forces()
     _total_torque = rudder_torque;
     _total_force = drag_force + rudder_drag_force;
 
+}
+
+double Vessel::rudder_lift_coefficient()
+{
+    return 1.0;
+}
+
+double Vessel::rudder_drag_coefficient()
+{
+    return 1.0;
 }
