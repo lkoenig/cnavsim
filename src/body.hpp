@@ -1,6 +1,7 @@
 #ifndef BODY_H
 #define BODY_H
 
+#include <Eigen/Core>
 #include <Eigen/Dense>
 
 using namespace Eigen;
@@ -29,14 +30,14 @@ protected:
     Matrix<double, 6, 6> m_inverseGeneralizedMass;
 
     // Position
-    Map<Matrix<double, 6, 1>> m_generalizedPosition; // N, E, D, phy, theta, psi
-    Map<Vector3d> m_position; // N, E, D
-    Map<Vector3d> m_angle; // phy, theta, psi
+    Map< Matrix<double, 6, 1> > m_generalizedPosition; // N, E, D, phy, theta, psi
+    Map< Vector3d > m_position; // N, E, D
+    Map< Vector3d > m_angle; // phy, theta, psi
 
     // Velocity
-    Map<Matrix<double, 6, 1>> m_generalizedVelocity;
-    Map<Vector3d> m_linearVelocity; // N, E, D
-    Map<Vector3d> m_angularVelocity; // phy, theta, psi
+    Map< Matrix<double, 6, 1> > m_generalizedVelocity;
+    Map< Vector3d > m_linearVelocity; // N, E, D
+    Map< Vector3d > m_angularVelocity; // phy, theta, psi
 
     Matrix<double, 6, 1> m_generalizedForce;
 
