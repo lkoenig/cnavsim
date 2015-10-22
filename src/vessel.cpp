@@ -26,7 +26,7 @@ void Vessel::apply_forces()
     double rudder_lift = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_lift_coefficient();
     double rudder_drag = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_drag_coefficient();
 
-	Vector3d rudder_linear = rudder_lift * Vector3d::UnitX() - rudder_lift * Vector3d::UnitY();
+    Vector3d rudder_linear = rudder_lift * Vector3d::UnitX() - rudder_drag * Vector3d::UnitY();
 
 
 	Matrix<double, 6, 1> rudder;
