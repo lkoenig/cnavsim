@@ -11,8 +11,8 @@ public:
     
     void time_step(double time_delta);
 
-    Vector2d getPosition();
-    Vector2d getVelocity();
+	Matrix<double, 6, 1> getGeneralizedPosition();
+	Matrix<double, 6, 1> getGeneralizedVelocity();
     double getHeading();
     
 protected:
@@ -40,27 +40,9 @@ protected:
 
     Matrix<double, 6, 1> m_generalizedForce;
 
-
-    // Old stuff
-    Vector2d _total_force;
-
-    Vector2d _position;  // x, y, heading
-    Vector2d _velocity;
-    Vector2d _acceleration;
-
-
     Matrix3d m_inertia;
     double m_mass; // mass
     
-    
-    double _inertia;
-        
-    double _total_torque;
-    
-    double _heading;
-    double _angularVelocity;    // rotational velocity
-    double _angularMomentum; 
-
 private:
     double m_generalizedPositionData[6]; // x, y, z, phy, theta, zeta
     double m_generalizedVelocityData[6]; // x, y, z, phy, theta, zeta

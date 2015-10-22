@@ -8,31 +8,29 @@
 
 Vessel::Vessel()
     : Body(10., MatrixXd::Identity(3,3))
-    , _length(12)
-    , _beam(4)
+    , m_length(12)
+    , m_beam(4)
 {
     m_linearVelocity << 5, 5, 0;
-    _heading = 0;
-    _angularVelocity = 0;
-    _position << 0., 0.;
-    _velocity << 5, 5;
-    _inertia = 1;
-    _rudder_angle = 10 * 2 * 3.14 / 360.;
-    _rudder_area = 1.0;
+    m_rudder_angle = 10 * 2 * 3.14 / 360.;
+    m_rudder_area = 1.0;
 }
 
 void Vessel::apply_forces()
 {
-    Vector2d velocity_in_water = _velocity;
+	// http://www.marinecontrol.org/
 
     // Rudder
-    Vector3d rudder_lift;
-    Vector3d rudder_drag;
-    double rudder_effective_area = _rudder_area * sin(_rudder_angle);
+    double rudder_effective_area = m_rudder_area * sin(m_rudder_angle);
 
-    rudder_lift = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_lift_coefficient();
-    rudder_drag = 0.5 * Constant::densityOfWater * rudder_effective_area *m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_drag_coefficient();
+    double rudder_lift = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_lift_coefficient();
+    double rudder_drag = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_drag_coefficient();
 
+	Vector3d rudder_linear = rudder_lift * Vector3d::UnitX() - rudder_lift * Vector3d::UnitY();
+
+
+	Matrix<double, 6, 1> rudder;
+	rudder << rudder_linear, -m_length / 2 * Vector3d::UnitY().cross(rudder_linear);
 
     double C_D = 1;
     double A = 1;
@@ -41,21 +39,12 @@ void Vessel::apply_forces()
     //   v is the velocity
     //   C_D coefficient of drag
     //   A Cross sectional area
-    Vector2d drag_force = -1. / 2. * Constant::densityOfWater * _velocity.norm() * _velocity * C_D * A;
+	Matrix<double, 6, 1> drag_force;
+	drag_force << 
+		- 0.5 * Constant::densityOfWater * m_linearVelocity.norm() * m_linearVelocity * C_D * A,
+		Vector3d::Zero();
 
-
-    // Rudder https://gamedev.stackexchange.com/questions/92747/2d-boat-controlling-physics
-    double rudder_drag_coefficient = 1.;
-    Vector2d rudder_drag_force;
-    rudder_drag_force = -std::abs(sin(_rudder_angle)) * rudder_drag_coefficient * _rudder_area * _velocity.norm() * _velocity;
-
-    double turning_torque = sin(_rudder_angle) * _rudder_area * velocity_in_water.norm() * Constant::densityOfWater * _length / 2.;
-    double water_torque = .1; // p0 + p1 * m_angularVelocity + p2 * m_angularVelocity * m_angularVelocity;
-    double rudder_torque = copysign(std::max(0.0, std::abs(turning_torque) - std::abs(water_torque)), turning_torque);
-
-    _total_torque = rudder_torque;
-    _total_force = drag_force + rudder_drag_force;
-
+	m_generalizedForce = rudder + drag_force;
 }
 
 double Vessel::rudder_lift_coefficient()

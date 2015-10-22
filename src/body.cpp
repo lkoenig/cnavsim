@@ -11,16 +11,23 @@ Matrix3d SkewSymetric(Vector3d x)
     return S;
 }
 
+Matrix3d Rotation(Vector3d eulerAngle) 
+{
+	Matrix3d R;
+	double phi = eulerAngle(0);
+	double theta = eulerAngle(1);
+	double psi = eulerAngle(2);
+	R <<
+		cos(psi) * cos(theta), -sin(psi) * cos(phi) + cos(psi) * sin(theta) * sin(phi), sin(psi) * sin(phi) + cos(psi) * cos(phi) * sin(theta),
+		sin(psi) * cos(theta), cos(psi) * cos(phi) + sin(phi) * sin(theta) * sin(psi), -cos(psi) * sin(phi) + sin(psi) * cos(phi) * sin(theta),
+		-sin(theta), cos(theta) * sin(phi), cos(theta) * cos(phi);
+	return R;
+
+}
+
+
 void Body::time_step(double time_delta) 
 {
-    _acceleration = _total_force / m_mass;
-    _velocity += _acceleration * time_delta;
-    _position += _velocity * time_delta;
-
-    _angularMomentum = _total_torque / _inertia;
-    _angularVelocity += _angularMomentum * time_delta;
-    _heading += _angularVelocity * time_delta;
-
     Matrix3d C21 = -m_mass * (SkewSymetric(m_linearVelocity) + SkewSymetric(SkewSymetric(m_angularVelocity) * m_gravityCenterPosition));
     Matrix3d C22 = m_mass * SkewSymetric(SkewSymetric(m_linearVelocity) * m_gravityCenterPosition) - SkewSymetric(m_inertia * m_angularVelocity);
     Matrix<double, 6, 6> coriolis;
@@ -30,21 +37,22 @@ void Body::time_step(double time_delta)
 
     Matrix<double, 6, 1> momentum = m_inverseGeneralizedMass * (m_generalizedForce - coriolis * m_generalizedVelocity);
     m_generalizedVelocity += time_delta * momentum;
-    m_generalizedPosition += time_delta * m_generalizedVelocity;
+	
+	Matrix<double, 6, 6> J;
+	J << 
+		Rotation(m_angle), Matrix3d::Zero(),
+		Matrix3d::Zero(), Matrix3d::Identity();
+    m_generalizedPosition += time_delta * J * m_generalizedVelocity;
 
 
 }
 
-Vector2d Body::getPosition() {
-    return _position;
+Matrix<double, 6, 1> Body::getGeneralizedPosition() {
+    return m_generalizedPosition;
 }
 
-Vector2d Body::getVelocity() {
-    return _velocity;
-}
-
-double Body::getHeading() {
-    return _heading;
+Matrix<double, 6, 1> Body::getGeneralizedVelocity() {
+    return m_generalizedVelocity;
 }
 
 Body::Body(

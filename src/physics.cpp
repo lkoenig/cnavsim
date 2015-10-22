@@ -33,10 +33,8 @@ void PhysicsEngine::timestep(double time_delta)
 void PhysicsEngine::print_all_positions() {
     std::cout << m_current_time << " ";
     for (std::vector<Body *>::iterator it = m_actors.begin(); it != m_actors.end(); ++it) {
-        std::cout << (*it)->getPosition().transpose() << " ";
-        std::cout << (*it)->getHeading() << " ";
-        std::cout << (*it)->getVelocity().transpose() << " ";
-        std::cout << (*it)->getVelocity().norm() << " ";
+        std::cout << (*it)->getGeneralizedPosition().transpose() << " ";
+        std::cout << (*it)->getGeneralizedVelocity().transpose() << " ";
     }
     std::cout << std::endl;
 

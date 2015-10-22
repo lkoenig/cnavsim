@@ -12,10 +12,10 @@ private:
 
 
     // https://en.wikipedia.org/wiki/Ship_measurements
-    double _length; // in m
-    double _beam; // in m
+    double m_length; // in m
+    double m_beam; // in m
     
     // Parameters
-    double _rudder_angle; // in degree
-    double _rudder_area; // in m**2
+    double m_rudder_angle; // in degree
+    double m_rudder_area; // in m**2
 };
