@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     physics->add_body(vessel);
     double time_delta = .001;
 
-    for (double t = 0.0; t < 10.; t += time_delta) {
+    for (double t = 0.0; t < 20.; t += time_delta) {
         physics->timestep(time_delta);
         physics->print_all_positions();
     }

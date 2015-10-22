@@ -12,7 +12,7 @@ Vessel::Vessel()
     , m_beam(4)
 {
     m_linearVelocity << 5, 5, 0;
-    m_rudder_angle = 10 * 2 * 3.14 / 360.;
+    m_rudder_angle = - 45 * 2 * 3.14 / 360.;
     m_rudder_area = 1.0;
 }
 
@@ -26,7 +26,9 @@ void Vessel::apply_forces()
     double rudder_lift = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_lift_coefficient();
     double rudder_drag = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_drag_coefficient();
 
-    Vector3d rudder_linear = rudder_lift * Vector3d::UnitX() - rudder_drag * Vector3d::UnitY();
+    Vector3d velocity_direction = m_linearVelocity / m_linearVelocity.norm();
+
+    Vector3d rudder_linear = rudder_lift * Vector3d::UnitZ().cross(velocity_direction) - rudder_drag * velocity_direction;
 
 
 	Matrix<double, 6, 1> rudder;
