@@ -6,13 +6,15 @@
 #include "physics.hpp"
 #include "vessel.hpp"
 
+static const double deg2rad = M_PI / 180.;
+
 Vessel::Vessel()
     : Body(10., MatrixXd::Identity(3,3))
     , m_length(12)
     , m_beam(4)
 {
-    m_linearVelocity << 5, 5, 0;
-    m_rudder_angle = - 45 * 2 * 3.14 / 360.;
+    m_linearVelocity << 5, 0, 0;
+    m_rudder_angle = - 45 * deg2rad;
     m_rudder_area = 1.0;
 }
 

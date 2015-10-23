@@ -11,20 +11,40 @@ Matrix3d SkewSymetric(Vector3d x)
     return S;
 }
 
-Matrix3d Rotation(Vector3d eulerAngle) 
+Matrix<double, 6, 6> Rotation(Vector3d eulerAngle) 
 {
-	Matrix3d R;
-	double phi = eulerAngle(0);
-	double theta = eulerAngle(1);
-	double psi = eulerAngle(2);
-	R <<
-		cos(psi) * cos(theta), -sin(psi) * cos(phi) + cos(psi) * sin(theta) * sin(phi), sin(psi) * sin(phi) + cos(psi) * cos(phi) * sin(theta),
-		sin(psi) * cos(theta), cos(psi) * cos(phi) + sin(phi) * sin(theta) * sin(psi), -cos(psi) * sin(phi) + sin(psi) * cos(phi) * sin(theta),
-		-sin(theta), cos(theta) * sin(phi), cos(theta) * cos(phi);
-	return R;
+    Matrix3d R;
+    double phi = eulerAngle(0);
+    double theta = eulerAngle(1);
+    double psi = eulerAngle(2);
+
+    double cphi = cos(phi);
+    double ctheta = cos(theta);
+    double cpsi = cos(psi);
+
+    double sphi = sin(phi);
+    double spsi = sin(psi);
+    double stheta = sin(theta);
+	
+    R <<
+	cpsi * ctheta,     -spsi * cphi + cpsi * stheta * sphi,     spsi * sphi + cpsi * cphi * stheta,
+	spsi * ctheta,      cpsi * cphi + sphi * stheta * spsi,    -cpsi * sphi + spsi * cphi * stheta,
+	-stheta,                           ctheta * sphi,                          ctheta * cphi;
+
+    Matrix3d J2;
+    J2 <<
+	1, sphi * stheta / ctheta, cphi * stheta / ctheta,
+	0, cphi, -sphi,
+	0, sphi / ctheta, cphi / ctheta;
+    
+    Matrix<double, 6, 6> J;
+    J << 
+	R, Matrix3d::Zero(),
+	Matrix3d::Zero(), J2;
+
+    return J;
 
 }
-
 
 void Body::time_step(double time_delta) 
 {
@@ -38,11 +58,7 @@ void Body::time_step(double time_delta)
     Matrix<double, 6, 1> momentum = m_inverseGeneralizedMass * (m_generalizedForce - coriolis * m_generalizedVelocity);
     m_generalizedVelocity += time_delta * momentum;
 	
-	Matrix<double, 6, 6> J;
-	J << 
-		Rotation(m_angle), Matrix3d::Zero(),
-		Matrix3d::Zero(), Matrix3d::Identity();
-    m_generalizedPosition += time_delta * J * m_generalizedVelocity;
+    m_generalizedPosition += time_delta * Rotation(m_angle) * m_generalizedVelocity;
 
 
 }
