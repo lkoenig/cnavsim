@@ -9,13 +9,13 @@
 static const double deg2rad = M_PI / 180.;
 
 Vessel::Vessel()
-    : Body(10., MatrixXd::Identity(3,3))
+    : Body(200e3, 1, 1)
     , m_length(12)
     , m_beam(4)
 {
-    m_linearVelocity << 5, 0, 0;
+    m_linearVelocity << 5, 0;
     m_rudder_angle = - 45 * deg2rad;
-    m_rudder_area = 1.0;
+    m_rudder_area = 3.0;
 }
 
 void Vessel::apply_forces()
@@ -27,14 +27,10 @@ void Vessel::apply_forces()
 
     double rudder_lift = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_lift_coefficient();
     double rudder_drag = 0.5 * Constant::densityOfWater * rudder_effective_area * m_linearVelocity.norm() * m_linearVelocity.norm() * rudder_drag_coefficient();
-
-    Vector3d velocity_direction = m_linearVelocity / m_linearVelocity.norm();
-
-    Vector3d rudder_linear = rudder_lift * Vector3d::UnitZ().cross(velocity_direction) - rudder_drag * velocity_direction;
-
-
-	Matrix<double, 6, 1> rudder;
-	rudder << rudder_linear, -m_length / 2 * Vector3d::UnitY().cross(rudder_linear);
+	
+	Vector3d rudder; rudder << 
+		rudder_lift * Vector2d::UnitY() + rudder_drag * Vector2d::UnitX(), 
+		-m_length / 2. * rudder_drag;
 
     double C_D = 1;
     double A = 1;
@@ -43,10 +39,10 @@ void Vessel::apply_forces()
     //   v is the velocity
     //   C_D coefficient of drag
     //   A Cross sectional area
-	Matrix<double, 6, 1> drag_force;
+	Vector3d drag_force;
 	drag_force << 
 		- 0.5 * Constant::densityOfWater * m_linearVelocity.norm() * m_linearVelocity * C_D * A,
-		Vector3d::Zero();
+		0;
 
 	m_generalizedForce = rudder + drag_force;
 }

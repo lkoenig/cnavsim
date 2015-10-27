@@ -48,47 +48,60 @@ Matrix<double, 6, 6> Rotation(Vector3d eulerAngle)
 
 void Body::time_step(double time_delta) 
 {
-    Matrix3d C21 = -m_mass * (SkewSymetric(m_linearVelocity) + SkewSymetric(SkewSymetric(m_angularVelocity) * m_gravityCenterPosition));
-    Matrix3d C22 = m_mass * SkewSymetric(SkewSymetric(m_linearVelocity) * m_gravityCenterPosition) - SkewSymetric(m_inertia * m_angularVelocity);
-    Matrix<double, 6, 6> coriolis;
-    coriolis << 
-        MatrixXd::Zero(3, 3), C21,
-        C21, C22;
+	Vector3d momentum = m_inverseGeneralizedMass * m_generalizedForce;
 
-    Matrix<double, 6, 1> momentum = m_inverseGeneralizedMass * (m_generalizedForce - coriolis * m_generalizedVelocity);
-    m_generalizedVelocity += time_delta * momentum;
-	
-    m_generalizedPosition += time_delta * Rotation(m_angle) * m_generalizedVelocity;
+	// Runge kutta Assuming force are equals
+	//Matrix<double, 6, 1> k1, k2, k3, k4;
+	//k1 = m_generalizedVelocity + time_delta * momentum;
+	//k2 = m_generalizedVelocity + time_delta * 0.5 * k1;
+	//k3 = m_generalizedVelocity + time_delta * 0.5 * k2;
+	//k4 = m_generalizedVelocity + time_delta * k3;
+	//m_generalizedVelocity += time_delta / 6. * (k1 + 2. * k2 + 2. * k3 + k4);
+
+	m_generalizedVelocity += time_delta * momentum;
+
+	Matrix3d J;
+	double cpsi = cos(*m_psi);
+	double spsi = sin(*m_psi);
+	J <<
+		cpsi, -spsi, 0,
+		spsi, cpsi, 0,
+		0, 0,  1;
+
+    m_generalizedPosition += time_delta * J * m_generalizedVelocity;
 
 
 }
 
-Matrix<double, 6, 1> Body::getGeneralizedPosition() {
+Vector3d Body::getGeneralizedPosition() {
     return m_generalizedPosition;
 }
 
-Matrix<double, 6, 1> Body::getGeneralizedVelocity() {
+Vector3d Body::getGeneralizedVelocity() {
     return m_generalizedVelocity;
 }
 
 Body::Body(
     double mass,
-    Matrix3d inertia
+    double Iz,
+	double xg
     )
-    : m_gravityCenterPosition(Vector3d::Zero())
-    , m_generalizedPosition(m_generalizedPositionData, 6)
-    , m_position(m_generalizedPositionData, 3)
-    , m_angle(&m_generalizedPositionData[3], 3)
-    , m_generalizedVelocity(m_generalizedVelocityData, 6)
-    , m_linearVelocity(m_generalizedVelocityData, 3)
-    , m_angularVelocity(&m_generalizedVelocityData[3], 3)
-    , m_generalizedForce(MatrixXd::Zero(6,1))
-    , m_inertia(inertia)
+    : m_gravityCenterPosition(Vector2d::Zero())
+    , m_generalizedPosition(m_generalizedPositionData, sizeof(m_generalizedPositionData) / sizeof(m_generalizedPositionData[0]))
+    , m_position(m_generalizedPositionData, 2)
+    , m_psi(&m_generalizedPositionData[2])
+    , m_generalizedVelocity(m_generalizedVelocityData, sizeof(m_generalizedVelocityData) / sizeof(m_generalizedVelocityData[0]))
+    , m_linearVelocity(m_generalizedVelocityData, 2)
+    , m_r(&m_generalizedVelocityData[2])
+    , m_generalizedForce(Vector3d::Zero())
+    , m_Iz(Iz)
     , m_mass(mass)
+	, m_xg(xg)
 {
-    m_generalizedMass << 
-        m_mass * MatrixXd::Identity(3,3), -m_mass * SkewSymetric(m_gravityCenterPosition), 
-        m_mass * SkewSymetric(m_gravityCenterPosition), m_inertia;
+	m_generalizedMass <<
+		m_mass, 0, 0,
+		0, m_mass, m_mass * m_xg,
+		0, m_mass * m_xg, m_Iz;
 
     m_inverseGeneralizedMass = m_generalizedMass.inverse();
 

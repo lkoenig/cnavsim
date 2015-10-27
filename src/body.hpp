@@ -12,41 +12,42 @@ public:
     
     void time_step(double time_delta);
 
-	Matrix<double, 6, 1> getGeneralizedPosition();
-	Matrix<double, 6, 1> getGeneralizedVelocity();
-    double getHeading();
+    Vector3d getGeneralizedPosition();
+    Vector3d getGeneralizedVelocity();
     
 protected:
-    Body(
-        double mass,
-        Matrix3d inertia
+	Body(
+		double mass,
+		double Iz,
+		double xg
         );
 
     virtual ~Body() {};
 
-    Vector3d m_gravityCenterPosition;
+    Vector2d m_gravityCenterPosition;
     
-    Matrix<double, 6, 6> m_generalizedMass;
-    Matrix<double, 6, 6> m_inverseGeneralizedMass;
+    Matrix<double, 3, 3> m_generalizedMass;
+    Matrix<double, 3, 3> m_inverseGeneralizedMass;
 
-    // Position
-    Map< Matrix<double, 6, 1> > m_generalizedPosition; // N, E, D, phy, theta, psi
-    Map< Vector3d > m_position; // N, E, D
-    Map< Vector3d > m_angle; // phy, theta, psi
+    // Position in North East Down + Euler xyz
+    Map< Vector3d > m_generalizedPosition; // N, E, psi
+    Map< Vector2d > m_position; // N, E
+    double *m_psi; // psi
 
-    // Velocity
-    Map< Matrix<double, 6, 1> > m_generalizedVelocity;
-    Map< Vector3d > m_linearVelocity; // N, E, D
-    Map< Vector3d > m_angularVelocity; // phy, theta, psi
+    // Velocity in body fixed
+    Map< Vector3d > m_generalizedVelocity;
+    Map< Vector2d > m_linearVelocity; // U, V 
+    double *m_r; // psi_dot
 
-    Matrix<double, 6, 1> m_generalizedForce;
+    Vector3d m_generalizedForce;
 
-    Matrix3d m_inertia;
+    double m_Iz;
     double m_mass; // mass
+	double m_xg; // mass over xz plane (assumed yg = 0)
     
 private:
-    double m_generalizedPositionData[6]; // x, y, z, phy, theta, zeta
-    double m_generalizedVelocityData[6]; // x, y, z, phy, theta, zeta
+    double m_generalizedPositionData[3]; // x, y, z, phy, theta, zeta
+    double m_generalizedVelocityData[3]; // x, y, z, phy, theta, zeta
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
