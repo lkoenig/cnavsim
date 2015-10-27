@@ -14,7 +14,7 @@ Vessel::Vessel()
     , m_beam(4)
 {
     m_linearVelocity << 5, 0;
-    m_rudder_angle = - 45 * deg2rad;
+    m_rudder_angle = - 5 * deg2rad;
     m_rudder_area = 3.0;
 }
 
@@ -32,8 +32,8 @@ void Vessel::apply_forces()
 		rudder_lift * Vector2d::UnitY() + rudder_drag * Vector2d::UnitX(), 
 		-m_length / 2. * rudder_drag;
 
-    double C_D = 1;
-    double A = 1;
+    double C_D = 200;
+    double A = 3.;
     // F_d = 1/2 \rho v^2 C_D A
     // Where
     //   v is the velocity
