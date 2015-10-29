@@ -11,4 +11,4 @@ set(SRC
   )
 
 add_executable(navsim ${SRC})
-target_link_libraries(navsim ${SDL_LIBRARY})
+target_link_libraries(navsim ${SDL_LIBRARY} ${EXTRA_LIBS})
