@@ -50,20 +50,32 @@ void Game::OnEvent(SDL_Event evt)
 
 void Game::Render()
 {
+	Vector3d position = m_vessel.getGeneralizedPosition();
+
     // Create an OpenGL context associated with the window.
     SDL_GLContext glcontext = SDL_GL_CreateContext(m_window);
+
 
     // now you can make GL calls.
     glClearColor(0.f,0.f,1.f,1.f);
     glClear(GL_COLOR_BUFFER_BIT);
     
-    glBegin( GL_QUADS ); 
-    glVertex2f( -0.5f, -0.5f ); 
-    glVertex2f( 0.5f, -0.5f ); 
-    glVertex2f( 0.5f, 0.5f ); 
-    glVertex2f( -0.5f, 0.5f ); 
+    glLoadIdentity();
+
+    glScalef(.01f, .01f, 1.f);
+
+    glRotated(position(2) * 180. / M_PI, 0, 0, 1);
+    glTranslated(position(1) / 10., position(0) / 10., 0.);
+
+
+
+    glBegin( GL_TRIANGLES );
+    glVertex2f( -1.f, -1.f );
+    glVertex2f( 1.f, -1.f );
+    glVertex2f( 0.0f, 2.f );
     glEnd();
-    
+
+
     SDL_GL_SwapWindow(m_window);
 
     // Once finished with OpenGL functions, the SDL_GLContext can be deleted.
@@ -73,7 +85,7 @@ void Game::Render()
 void Game::run() 
 {
     m_isRunning = true;
-    double time_delta = 0.1;
+    double time_delta = 0.01;
     
     while(m_isRunning)
     {
@@ -85,15 +97,19 @@ void Game::run()
         }
         
         // Physic simulation
-        m_physicsEngine.timestep(time_delta);
-        m_physicsEngine.print_all_positions();
+        for(int i = 0; i<100; i++)
+        {
+        	m_physicsEngine.timestep(time_delta);
+        	m_time += time_delta;
+        }
+        // m_physicsEngine.print_all_positions();
         
         // Rendering
         this->Render();
         
         // Time increase
         m_isRunning &= m_time < 1800.;
-        m_time += time_delta;
+
     }
     
 }

@@ -14,7 +14,7 @@ Vessel::Vessel()
     , m_beam(4)
 {
     m_linearVelocity << 5, 0;
-    m_rudder_angle = - 5 * deg2rad;
+    m_rudder_angle = - 30 * deg2rad;
     m_rudder_area = 3.0;
 }
 
