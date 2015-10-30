@@ -51,6 +51,7 @@ void Game::OnEvent(SDL_Event evt)
 void Game::Render()
 {
 	Vector3d position = m_vessel.getGeneralizedPosition();
+	Vector3d velocity = m_vessel.getGeneralizedVelocity();
 
     // Create an OpenGL context associated with the window.
     SDL_GLContext glcontext = SDL_GL_CreateContext(m_window);
@@ -62,17 +63,23 @@ void Game::Render()
     
     glLoadIdentity();
 
-    glScalef(.01f, .01f, 1.f);
+    glScalef(.003f, .003f, 1.f);
 
     glRotated(position(2) * 180. / M_PI, 0, 0, 1);
-    glTranslated(position(1) / 10., position(0) / 10., 0.);
+    glTranslated(position(1), position(0), 0.);
 
 
 
     glBegin( GL_TRIANGLES );
-    glVertex2f( -1.f, -1.f );
-    glVertex2f( 1.f, -1.f );
-    glVertex2f( 0.0f, 2.f );
+    glVertex2d( - m_vessel.getBeam() / 2, - m_vessel.getLength() / 2 );
+    glVertex2d( m_vessel.getBeam() / 2, - m_vessel.getLength() / 2 );
+    glVertex2d( 0.0f, m_vessel.getLength() / 2 );
+    glEnd();
+
+    glColor3f(1., 0., 0.);
+    glBegin( GL_LINES );
+    glVertex2f( 0.f, 0.f );
+    glVertex2d( velocity(1), velocity(0));
     glEnd();
 
 
@@ -106,10 +113,6 @@ void Game::run()
         
         // Rendering
         this->Render();
-        
-        // Time increase
-        m_isRunning &= m_time < 1800.;
-
     }
     
 }
