@@ -8,6 +8,13 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(Eigen3 REQUIRED)
 find_package(SDL REQUIRED)
 
+find_package(OpenGL REQUIRED)
+
+
+list(APPEND EXTRA_LIBS
+    ${OPENGL_LIBRARIES}
+)
+
 # Platform specific
 if(APPLE)
     find_library(ICONV_LIBRARY iconv)

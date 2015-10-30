@@ -1,9 +1,106 @@
 #include <iostream>
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_opengl.h"
 
 #include "vessel.hpp"
 #include "physics.hpp"
+
+class Game {
+public:
+    Game();
+    virtual ~Game();
+    
+    void run();
+    
+private:
+    void OnEvent(SDL_Event evt);
+    void Render();
+    
+    
+private:
+    bool m_isRunning;
+    double m_time;
+    SDL_Window *m_window;
+    PhysicsEngine m_physicsEngine;
+    Vessel m_vessel;
+};
+
+
+Game::Game()
+    : m_isRunning(false)
+    , m_time(0.)
+{
+    
+    m_window = SDL_CreateWindow(
+        "Navigation simulator",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+        640, 480, 
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+    
+    m_physicsEngine.add_body(&m_vessel);
+    
+}
+
+void Game::OnEvent(SDL_Event evt)
+{
+    if(evt.type==SDL_QUIT)
+        m_isRunning = false;    
+}
+
+void Game::Render()
+{
+    // Create an OpenGL context associated with the window.
+    SDL_GLContext glcontext = SDL_GL_CreateContext(m_window);
+
+    // now you can make GL calls.
+    glClearColor(0.f,0.f,1.f,1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    glBegin( GL_QUADS ); 
+    glVertex2f( -0.5f, -0.5f ); 
+    glVertex2f( 0.5f, -0.5f ); 
+    glVertex2f( 0.5f, 0.5f ); 
+    glVertex2f( -0.5f, 0.5f ); 
+    glEnd();
+    
+    SDL_GL_SwapWindow(m_window);
+
+    // Once finished with OpenGL functions, the SDL_GLContext can be deleted.
+    SDL_GL_DeleteContext(glcontext); 
+}
+
+void Game::run() 
+{
+    m_isRunning = true;
+    double time_delta = 0.1;
+    
+    while(m_isRunning)
+    {
+        // Handling event
+        SDL_Event evt;
+        while(SDL_PollEvent(&evt))
+        {
+            this->OnEvent(evt);
+        }
+        
+        // Physic simulation
+        m_physicsEngine.timestep(time_delta);
+        m_physicsEngine.print_all_positions();
+        
+        // Rendering
+        this->Render();
+        
+        // Time increase
+        m_isRunning &= m_time < 1800.;
+        m_time += time_delta;
+    }
+    
+}
+
+Game::~Game(){
+    SDL_DestroyWindow(m_window);
+}
 
 int main(int argc, char **argv) {
     // std::cout << "NavSim" << std::endl;
@@ -13,51 +110,10 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    SDL_Window *window;
-    window = SDL_CreateWindow(
-        "Navigation simulator",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
-        640, 480, 
-        SDL_WINDOW_SHOWN);
+    Game *game = new Game();
 
-    //The surface contained by the window SDL_Surface* screenSurface = NULL;
-    SDL_Surface* screenSurface = NULL;
+    game->run();
     
-    PhysicsEngine *physics = new PhysicsEngine();
-    Vessel *vessel = new Vessel();
-
-    physics->add_body(vessel);
-    double time_delta = .1; // 0.1 should be sufficient
-    bool done=false;
-    double t=0;
-    
-    while(!done){
-        // Handling event
-        SDL_Event evt;
-        while(SDL_PollEvent(&evt))
-        {
-            if(evt.type==SDL_QUIT)
-                done=true;
-        }
-        
-        // Physic simulation
-        physics->timestep(time_delta);
-        physics->print_all_positions();
-        
-        
-        // Rendering
-        screenSurface = SDL_GetWindowSurface( window );
-        SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0x00, 0x00 ) );
-        SDL_UpdateWindowSurface( window );
-
-        // Time increase
-        done |= t > 1800.;
-        t+=time_delta;
-    }
-
-    delete vessel;
-    delete physics;
-    SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
 
