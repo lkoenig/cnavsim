@@ -2,6 +2,7 @@
 #define PHYSICS_H
 
 #include <vector>
+#include <memory>
 #include "body.hpp"
 
 namespace Constant {
@@ -12,14 +13,14 @@ class PhysicsEngine {
 public:
     PhysicsEngine();
     
-    void add_body(Body *actor);
+    void add_body(const std::shared_ptr<Body> actor);
     void timestep(double time_delta); 
     void print_all_positions();
     
     
 private:
     double m_current_time;
-    std::vector<Body *> m_actors;
+    std::vector< std::shared_ptr<Body> > m_actors;
 };
 
 #endif /* PHYSICS_H */

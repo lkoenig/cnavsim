@@ -10,7 +10,7 @@ PhysicsEngine::PhysicsEngine()
 {
 }
 
-void PhysicsEngine::add_body(Body *actor)
+void PhysicsEngine::add_body(const std::shared_ptr<Body> actor)
 {
     this->m_actors.push_back(actor);
 }
@@ -20,21 +20,21 @@ void PhysicsEngine::timestep(double time_delta)
 {
     m_current_time += time_delta;
     // apply forces
-    for (std::vector<Body *>::iterator it = m_actors.begin(); it != m_actors.end(); ++it) {
-        (*it)->apply_forces();
+    for (auto& m_actor: m_actors) {
+        m_actor->apply_forces();
     }
 
     // integrate and update position
-    for (std::vector<Body *>::iterator it = m_actors.begin(); it != m_actors.end(); ++it) {
-        (*it)->time_step(time_delta);
+    for (auto& m_actor : m_actors) {
+        m_actor->time_step(time_delta);
     }
 }
 
 void PhysicsEngine::print_all_positions() {
     std::cout << m_current_time << " ";
-    for (std::vector<Body *>::iterator it = m_actors.begin(); it != m_actors.end(); ++it) {
-        std::cout << (*it)->getGeneralizedPosition().transpose() << " ";
-        std::cout << (*it)->getGeneralizedVelocity().transpose() << " ";
+    for (auto& m_actor : m_actors) {
+        std::cout << m_actor->getGeneralizedPosition().transpose() << " ";
+        std::cout << m_actor->getGeneralizedVelocity().transpose() << " ";
     }
     std::cout << std::endl;
 
