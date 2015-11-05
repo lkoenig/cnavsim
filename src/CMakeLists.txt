@@ -15,6 +15,8 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+add_subdirectory("cli")
+
 if(ENABLE_GUI)
   add_subdirectory("gui")
 endif()
