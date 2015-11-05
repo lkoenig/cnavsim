@@ -4,10 +4,15 @@ cmake_minimum_required(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 
+option(ENABLE_GUI "Enable GUI support" ON)
+
 # Required packages
 find_package(Eigen3 REQUIRED)
-find_package(SDL2 REQUIRED)
 
+set(EXTRA_LIBS)
+
+if(ENABLE_GUI)
+find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 
 
@@ -34,10 +39,10 @@ if(APPLE)
     )
 endif()
 
+include_directories(${SDL2_INCLUDE_DIR})
+endif()
 # 
 include_directories(${EIGEN3_INCLUDE_DIR})
-include_directories(${SDL2_INCLUDE_DIR})
-
 #
 add_subdirectory(src)
 

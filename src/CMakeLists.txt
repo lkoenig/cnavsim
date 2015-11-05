@@ -1,7 +1,6 @@
 
 
 set(SRC
-  main.cpp
   vessel.cpp
   vessel.hpp
   physics.cpp
@@ -10,5 +9,12 @@ set(SRC
   body.hpp
   )
 
-add_executable(navsim ${SRC})
-target_link_libraries(navsim ${SDL2_LIBRARY} ${EXTRA_LIBS})
+add_library(navsim STATIC ${SRC})
+
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+if(ENABLE_GUI)
+  add_subdirectory("gui")
+endif()
